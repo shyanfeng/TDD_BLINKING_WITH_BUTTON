@@ -95,3 +95,24 @@ void test_led_at_blinking_off_change_mode(void){
   TEST_ASSERT_EQUAL(ledData.state, LED_ON);
   
 }
+
+void test_led_on_do_nothing(void){
+  LedData ledData;
+  
+  ledInitData(&ledData);
+  msg = CHANGE_MODE;
+  ledSM(&ledData);
+  
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_ON);
+  
+  msg = DO_NOTHING;
+  ledSM(&ledData);
+  
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_OFF);
+  
+  msg = CHANGE_MODE;
+  ledSM(&ledData);
+  
+  TEST_ASSERT_EQUAL(ledData.state, LED_ON);
+  
+}
