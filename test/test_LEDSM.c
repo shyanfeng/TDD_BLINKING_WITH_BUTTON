@@ -1,6 +1,8 @@
 #include "unity.h"
 #include "LEDSM.h"
+#include "ButtonSM.h"
 #include "Message.h"
+#include "mock_pushButton1.h"
 
 void setUp(void){}
 
@@ -146,4 +148,91 @@ void test_led_on_change_mode(void){
   
   TEST_ASSERT_EQUAL(ledData.state, LED_OFF);
   
+}
+
+void test_led_with_button(void){
+  ButtonData buttonData;
+  LedData ledData;
+  
+  buttonInitData(&buttonData);
+  ledInitData(&ledData);
+  TEST_ASSERT_EQUAL(buttonData.state, RELEASE);
+  TEST_ASSERT_EQUAL(ledData.state, LED_OFF);
+  
+  isButtonPressed_ExpectAndReturn(true);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, PRESS);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_ON);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_OFF);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_ON);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_OFF);
+  isButtonPressed_ExpectAndReturn(false);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, RELEASE);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_ON);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_OFF);
+  isButtonPressed_ExpectAndReturn(true);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, PRESS);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_ON);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_ON);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_ON);
+  isButtonPressed_ExpectAndReturn(false);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, RELEASE);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_ON);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_ON);
+  isButtonPressed_ExpectAndReturn(true);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, PRESS);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_OFF);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_OFF);
+  isButtonPressed_ExpectAndReturn(false);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, RELEASE);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_OFF);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_OFF);
+  
+  //second time
+  isButtonPressed_ExpectAndReturn(true);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, PRESS);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_ON);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_OFF);
+  isButtonPressed_ExpectAndReturn(false);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, RELEASE);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_BLINKING_ON);
+  isButtonPressed_ExpectAndReturn(true);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, PRESS);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_ON);
+  isButtonPressed_ExpectAndReturn(false);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, RELEASE);
+  isButtonPressed_ExpectAndReturn(true);
+  buttonSM(&buttonData);
+  TEST_ASSERT_EQUAL(buttonData.state, PRESS);
+  ledSM(&ledData);
+  TEST_ASSERT_EQUAL(ledData.state, LED_OFF);
+
 }
